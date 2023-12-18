@@ -7,7 +7,7 @@ const PORT = 4000
 
 let counterSlice = slices.counter.slice
 const singletonStore = new SingletonStore().chainConfigure({
-  // reducer: { users: slices.user.slice.reducer, posts: slices.post.slice.reducer },
+  reducer: { users: slices.user.slice.reducer, posts: slices.post.slice.reducer },
   // slices: [slices.user.slice, slices.post.slice],
   // enableReducerManagerReducer: true,
 })
@@ -56,7 +56,11 @@ app.listen(PORT, (error) => {
     return
   }
   console.info(`Listening on port ${PORT}. Open up http://localhost:${PORT}/ in your browser.`)
+  // singletonStore.getStore().subscribe((...res) => {
+  //   console.log(res,singletonStore.getStore().getState())
+  // })
+
   // singletonStore.toObservable().subscribe({ onNext: console.log })
   // singletonStore.observeStore(undefined, (d) => d, console.log)
-  // singletonStore.observeStore(undefined, console.log)
+  singletonStore.observeStore(undefined, console.log)
 })
