@@ -1,7 +1,11 @@
 import express, { type Request, type Response } from 'express';
 import qs from 'qs';
 
-import { ReduxStoreManager, type DynamicReduxStoreManagerState } from './ReduxStoreManager/index.ts';
+import {
+  type DynamicReduxStoreManagerState,
+  ReduxStoreManager,
+} from './ReduxStoreManager/index.ts';
+import { selectPostList } from './selectors/post.ts';
 import { counterSlice, postSlice, userSlice } from './slices/index.ts';
 
 const app = express();
@@ -64,16 +68,8 @@ app.listen(PORT, (error?: Error) => {
     `Listening on port ${PORT}. Open up http://localhost:${PORT}/ in your browser.`
   );
 
-  // reduxStoreManager.store?.subscribe((...res) => {
-  //   console.log(
-  //     res,
-  //     reduxStoreManager?.store?.getState(),
-  //     reduxStoreManager.getReducers()
-  //   );
-  // });
+  reduxStoreManager.observeStore(selectPostList, (d) => console.log(d));
 
-  // reduxStoreManager.toObservable().subscribe({ onNext: console.log });
-  reduxStoreManager.observeStore((d: DynamicReduxStoreManagerState) => d?.counter?.counter, console.log);
   reduxStoreManager.addSlice(postSlice, userSlice);
 });
 

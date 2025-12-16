@@ -1,4 +1,4 @@
-export const isDataValid = <T>(data: T): data is T => {
+export const isDataValid = <T>(data: T): data is NonNullable<T> => {
   switch (typeof data) {
     case 'undefined':
       return false;
@@ -9,15 +9,6 @@ export const isDataValid = <T>(data: T): data is T => {
     default:
       return Boolean(data);
   }
-};
-
-export const isDataExist = <T>(
-  data: T,
-  message: string = `${data} does not exist`
-): data is NonNullable<T> => {
-  const isExist = isDataValid(data);
-  if (!isExist) console.error(message);
-  return isExist;
 };
 
 export const isFunction = <T>(posFunc: T): posFunc is NonNullable<T> =>

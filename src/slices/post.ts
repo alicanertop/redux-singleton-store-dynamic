@@ -1,11 +1,11 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface PostSliceState {
-  post: { id: number | string; text: string; completed: boolean }[];
+  postList: { id: number | string; text: string; completed: boolean }[];
 }
 
 const initialState: PostSliceState = {
-  post: [],
+  postList: [],
 };
 
 export const postSlice = createSlice({
@@ -13,7 +13,7 @@ export const postSlice = createSlice({
   initialState: initialState,
   reducers: {
     added(state, action: PayloadAction<{ id: number | string; text: string }>) {
-      state.post.push({
+      state.postList.push({
         id: action.payload.id,
         text: action.payload.text,
         completed: false,
@@ -24,6 +24,6 @@ export const postSlice = createSlice({
 
 declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
   export interface DynamicReduxStoreManagerState {
-    post: PostSliceState;
+    post: Partial<PostSliceState>;
   }
 }

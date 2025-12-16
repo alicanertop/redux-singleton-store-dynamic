@@ -1,4 +1,4 @@
-import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface UserSliceState {
   user: { id: number | string; text: string; completed: boolean }[];
@@ -9,7 +9,7 @@ const initialState: UserSliceState = {
 };
 
 export const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState: initialState,
   reducers: {
     added(state, action: PayloadAction<{ id: number | string; text: string }>) {
@@ -24,6 +24,6 @@ export const userSlice = createSlice({
 
 declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
   export interface DynamicReduxStoreManagerState {
-    user: UserSliceState;
+    user: Partial<UserSliceState>;
   }
 }

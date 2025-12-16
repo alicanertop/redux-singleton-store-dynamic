@@ -8,12 +8,14 @@ import {
   configureStore,
 } from '@reduxjs/toolkit';
 
-import { isDataExist, isFunction } from './helpers/index.ts';
+import { isDataValid, isFunction } from './helpers/index.ts';
 
-export interface DynamicReduxStoreManagerState { }
+export interface DynamicReduxStoreManagerState {}
 
 export class ReduxStoreManager {
-  private $store?: Store<Partial<DynamicReduxStoreManagerState> & Record<string, any>> = undefined;
+  private $store?: Store<
+    Partial<DynamicReduxStoreManagerState> & Record<string, any>
+  > = undefined;
   private $slices: Set<Slice> = new Set();
   private $reducers: Map<string, Reducer> = new Map();
   private $options: ConfigureStoreOptions = { reducer: {} };
@@ -39,7 +41,7 @@ export class ReduxStoreManager {
   }
 
   private storeReplaceReducer() {
-    if (!isDataExist(this.$store, 'Store not found')) return;
+    if (!isDataValid(this.$store)) return;
     this.$store.replaceReducer(combineReducers(this.getReducers()));
   }
 
@@ -119,14 +121,14 @@ export class ReduxStoreManager {
 
   observeStoreWithGivenStore<S>(
     store: typeof this.$store,
-    select: (state: any) => S,
+    select: (state: Partial<DynamicReduxStoreManagerState>) => S,
     onChange?: (state: S) => void
   ) {
     if (!store) {
       store = this.$store;
     }
 
-    if (!isDataExist(store, 'Store was not set on SingletonStore')) return;
+    if (!isDataValid(store)) return;
 
     let currentState: S | undefined;
 
@@ -148,7 +150,10 @@ export class ReduxStoreManager {
     return unsubscribe;
   }
 
-  observeStore<S>(select: (state: any) => S, onChange?: (state: S) => void) {
+  observeStore<S>(
+    select: (state: Partial<DynamicReduxStoreManagerState>) => S,
+    onChange?: (state: S) => void
+  ) {
     return this.observeStoreWithGivenStore(this.store, select, onChange);
   }
 }

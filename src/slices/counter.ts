@@ -1,4 +1,4 @@
-import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface CounterSliceState {
   counter: number;
@@ -9,7 +9,7 @@ const initialState: CounterSliceState = {
 };
 
 export const counterSlice = createSlice({
-  name: "counter",
+  name: 'counter',
   initialState: initialState,
   reducers: {
     update: (state, action: PayloadAction<number>) => {
@@ -23,7 +23,6 @@ export const counterSlice = createSlice({
 
 declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
   export interface DynamicReduxStoreManagerState {
-    counter: CounterSliceState;
+    counter: Partial<CounterSliceState>;
   }
 }
-
