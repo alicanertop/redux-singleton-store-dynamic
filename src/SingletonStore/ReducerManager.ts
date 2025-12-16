@@ -1,23 +1,26 @@
-const { combineReducers } = require('redux')
+import { combineReducers } from 'redux'
 
-const { checkIsExist } = require('./helpers/checkIsExist')
+import { checkIsExist } from './helpers/checkIsExist.ts'
 
 const errorMessages = {
   sliceNotFound: 'Slice Not Found',
   keyNotFound: 'Key Not Found',
   storeFound: 'Store was already set on Reducer Manager',
   storeNotFound: 'Store was not set on Reducer Manager',
-  sliceWasFound: (key, action) => `${key}: slice already added on store, ${action} canceled`,
-  reducerWasFound: (key, action) => `${key}: reducer already added on store, ${action} canceled`,
-  reducerWasNotProvided: (key) => `${key}: reducer not provided`,
-  reducerWasDeleted: (key, action) =>
+  sliceWasFound: (key: string, action: string) =>
+    `${key}: slice already added on store, ${action} canceled`,
+  reducerWasFound: (key: string, action: string) =>
+    `${key}: reducer already added on store, ${action} canceled`,
+  reducerWasNotProvided: (key: string) => `${key}: reducer not provided`,
+  reducerWasDeleted: (key: string, action: string) =>
     `${key}: reducer already deleted from store, ${action} canceled`
 }
-class ReducerManager {
-  $slices = []
-  $options = {}
-  $reducers = {}
-  $store = undefined
+
+export class ReducerManager {
+  private $slices = []
+  private $options = {}
+  private $reducers = {}
+  private $store = undefined
 
   constructor(options) {
     this.$options = options
@@ -47,8 +50,8 @@ class ReducerManager {
   }
 
   addReducerViaSlice(slice) {
-    if (!checkIsExist({ data: this.$store, message: errorMessages.storeNotFound })) return
-    if (!checkIsExist({ data: slice, message: errorMessages.sliceNotFound })) return
+    if (!checkIsExist(this.$store, { message: errorMessages.storeNotFound })) return
+    if (!checkIsExist(slice, { message: errorMessages.sliceNotFound })) return
 
     if (this.getSlices().length) {
       if (this.getSlices().findIndex((sli) => sli.name === slice.name) === -1) {
@@ -65,7 +68,8 @@ class ReducerManager {
   }
 
   removeReducerViaSlice(slice) {
-    if (!checkIsExist({ data: this.$store, message: errorMessages.storeNotFound })) return
+    if (!checkIsExist(this.$store, { message: errorMessages.storeNotFound })) return
+
     if (this.getSlices().length && slice) {
       const index = this.getSlices().findIndex((sli) => sli.name === slice.name)
       if (index > -1) {
@@ -78,13 +82,12 @@ class ReducerManager {
 
   addReducer(key, reducer, slice) {
     if (slice) return this.addReducerViaSlice(slice)
-    if (!checkIsExist({ data: this.$store, message: errorMessages.storeNotFound })) return
-    if (!checkIsExist({ data: key, message: errorMessages.keyNotFound })) return
-    if (!checkIsExist({ data: reducer, message: errorMessages.reducerWasNotProvided(key) })) return
+    if (!checkIsExist(this.$store, { message: errorMessages.storeNotFound })) return
+    if (!checkIsExist(key, { message: errorMessages.keyNotFound })) return
+    if (!checkIsExist(reducer, { message: errorMessages.reducerWasNotProvided(key) })) return
 
     if (
-      checkIsExist({
-        data: this.$reducers[key],
+      checkIsExist(this.$reducers[key], {
         message: errorMessages.reducerWasFound(key, 'adding')
       })
     )
@@ -96,12 +99,11 @@ class ReducerManager {
 
   removeReducer(key, slice) {
     if (slice) return this.removeReducerViaSlice(slice)
-    if (!checkIsExist({ data: key, message: errorMessages.keyNotFound })) return
-    if (!checkIsExist({ data: this.$store, message: errorMessages.storeNotFound })) return
+    if (!checkIsExist(key, { message: errorMessages.keyNotFound })) return
+    if (!checkIsExist(this.$store, { message: errorMessages.storeNotFound })) return
 
     if (
-      !checkIsExist({
-        data: this.$reducers[key],
+      !checkIsExist(this.$reducers[key], {
         message: errorMessages.reducerWasDeleted(key, 'removing')
       })
     ) {
@@ -113,7 +115,7 @@ class ReducerManager {
   }
 
   setStore(store) {
-    if (checkIsExist({ data: this.$store, message: errorMessages.storeFound })) return this.$store
+    if (checkIsExist(this.$store, { message: errorMessages.storeFound })) return this.$store
 
     this.$store = store
     return this.$store
@@ -122,19 +124,20 @@ class ReducerManager {
   getStore() {
     return this.$store
   }
+
   getOptions() {
     return this.$options
   }
+
   getSlices() {
     return this.$slices
   }
+
   getReducers() {
     return this.$reducers
   }
+
   getCombinedReducers(state, action) {
     return combineReducers(this.getReducers())(state, action)
   }
 }
-
-exports.ReducerManager = ReducerManager
-module.exports = { ReducerManager }
