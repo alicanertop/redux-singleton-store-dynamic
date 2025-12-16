@@ -10,15 +10,16 @@ import {
 
 import { isDataValid, isFunction } from './helpers/index.ts';
 
-export interface DynamicReduxStoreManagerState {}
+export interface DynamicReduxStoreManagerStateBase {}
+export interface DynamicReduxStoreManagerState
+  extends Partial<DynamicReduxStoreManagerStateBase> {}
 
 export class ReduxStoreManager {
-  private $store?: Store<
-    Partial<DynamicReduxStoreManagerState> & Record<string, any>
-  > = undefined;
   private $slices: Set<Slice> = new Set();
   private $reducers: Map<string, Reducer> = new Map();
   private $options: ConfigureStoreOptions = { reducer: {} };
+  private $store?: Store<DynamicReduxStoreManagerState> =
+    undefined;
 
   private addSliceReducer(slice?: Slice) {
     if (!slice) return;
@@ -121,7 +122,7 @@ export class ReduxStoreManager {
 
   observeStoreWithGivenStore<S>(
     store: typeof this.$store,
-    select: (state: Partial<DynamicReduxStoreManagerState>) => S,
+    select: (state: DynamicReduxStoreManagerState) => S,
     onChange?: (state: S) => void
   ) {
     if (!store) {
@@ -151,7 +152,7 @@ export class ReduxStoreManager {
   }
 
   observeStore<S>(
-    select: (state: Partial<DynamicReduxStoreManagerState>) => S,
+    select: (state: DynamicReduxStoreManagerState) => S,
     onChange?: (state: S) => void
   ) {
     return this.observeStoreWithGivenStore(this.store, select, onChange);

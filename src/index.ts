@@ -1,11 +1,9 @@
 import express, { type Request, type Response } from 'express';
 import qs from 'qs';
 
-import {
-  type DynamicReduxStoreManagerState,
-  ReduxStoreManager,
-} from './ReduxStoreManager/index.ts';
-import { selectPostList } from './selectors/post.ts';
+import { ReduxStoreManager } from './ReduxStoreManager/index.ts';
+import { selectCounterValue } from './selectors/counter.ts';
+import { selectFirstPost, selectPostList } from './selectors/post.ts';
 import { counterSlice, postSlice, userSlice } from './slices/index.ts';
 
 const app = express();
@@ -69,6 +67,8 @@ app.listen(PORT, (error?: Error) => {
   );
 
   reduxStoreManager.observeStore(selectPostList, (d) => console.log(d));
+  reduxStoreManager.observeStore(selectFirstPost, (d) => console.log(d));
+  reduxStoreManager.observeStore(selectCounterValue, (d) => console.log(d));
 
   reduxStoreManager.addSlice(postSlice, userSlice);
 });

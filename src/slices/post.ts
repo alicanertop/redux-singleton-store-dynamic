@@ -23,7 +23,7 @@ export const postSlice = createSlice({
 });
 
 declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
-  export interface DynamicReduxStoreManagerState {
-    post: Partial<PostSliceState>;
+  export interface DynamicReduxStoreManagerStateBase {
+    post: PostSliceState;
   }
 }
