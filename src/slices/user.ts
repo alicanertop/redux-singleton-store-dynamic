@@ -9,7 +9,7 @@ const initialState: UserSliceState = {
 };
 
 export const userSlice = createSlice({
-  name: "users",
+  name: "user",
   initialState: initialState,
   reducers: {
     added(state, action: PayloadAction<{ id: number | string; text: string }>) {
@@ -21,3 +21,9 @@ export const userSlice = createSlice({
     },
   },
 });
+
+declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
+  export interface DynamicReduxStoreManagerState {
+    user: UserSliceState;
+  }
+}

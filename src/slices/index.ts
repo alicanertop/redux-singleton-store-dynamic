@@ -1,3 +1,3 @@
 export * from './counter.ts'
-export * from './posts.ts'
-export * from './users.ts'
+export * from './post.ts'
+export * from './user.ts'

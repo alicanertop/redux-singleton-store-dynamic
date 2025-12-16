@@ -9,7 +9,7 @@ const initialState: PostSliceState = {
 };
 
 export const postSlice = createSlice({
-  name: 'posts',
+  name: 'post',
   initialState: initialState,
   reducers: {
     added(state, action: PayloadAction<{ id: number | string; text: string }>) {
@@ -21,3 +21,9 @@ export const postSlice = createSlice({
     },
   },
 });
+
+declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
+  export interface DynamicReduxStoreManagerState {
+    post: PostSliceState;
+  }
+}

@@ -20,3 +20,10 @@ export const counterSlice = createSlice({
     },
   },
 });
+
+declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
+  export interface DynamicReduxStoreManagerState {
+    counter: CounterSliceState;
+  }
+}
+

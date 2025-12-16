@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from 'express';
 import qs from 'qs';
 
-import { ReduxStoreManager } from './ReduxStoreManager/index.ts';
+import { ReduxStoreManager, type DynamicReduxStoreManagerState } from './ReduxStoreManager/index.ts';
 import { counterSlice, postSlice, userSlice } from './slices/index.ts';
 
 const app = express();
@@ -73,7 +73,7 @@ app.listen(PORT, (error?: Error) => {
   // });
 
   // reduxStoreManager.toObservable().subscribe({ onNext: console.log });
-  // reduxStoreManager.observeStore((d) => d, console.log);
+  reduxStoreManager.observeStore((d: DynamicReduxStoreManagerState) => d?.counter?.counter, console.log);
   reduxStoreManager.addSlice(postSlice, userSlice);
 });
 

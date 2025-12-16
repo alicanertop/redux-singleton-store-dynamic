@@ -10,8 +10,10 @@ import {
 
 import { isDataExist, isFunction } from './helpers/index.ts';
 
+export interface DynamicReduxStoreManagerState { }
+
 export class ReduxStoreManager {
-  private $store?: Store = undefined;
+  private $store?: Store<Partial<DynamicReduxStoreManagerState> & Record<string, any>> = undefined;
   private $slices: Set<Slice> = new Set();
   private $reducers: Map<string, Reducer> = new Map();
   private $options: ConfigureStoreOptions = { reducer: {} };
