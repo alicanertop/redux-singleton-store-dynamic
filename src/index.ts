@@ -1,5 +1,5 @@
 import qs from "qs";
-import express from "express";
+import express, { type Request, type Response } from "express";
 import { SingletonStore } from "./SingletonStore/index.ts";
 import { counterSlice, postSlice, userSlice } from "./slices/index.ts";
 
@@ -12,51 +12,51 @@ const singletonStore = new SingletonStore().chainConfigure({
 	// enableReducerManagerReducer: true,
 });
 
-app.get("/state", function (req, res) {
-	res.send(singletonStore.getStore().getState());
+app.get("/state", (req: Request, res: Response) => {
+	res.send(singletonStore.getStore()?.getState());
 });
 
-app.get("/addCounter", function (req, res) {
-	const params = qs.parse(req.query);
-	const counter = parseInt(params.counter, 10) || 0;
+app.get("/addCounter", (req: Request, res: Response) => {
+	const params = qs.parse(req.query as any) as { counter: string };
+	const counter = Number.parseInt(params.counter, 10) || 0;
 
 	singletonStore
 		.getStore()
-		.reducerManager.addReducer(counterSlice.name, counterSlice.reducer);
+		?.reducerManager.addReducer(counterSlice.name, counterSlice.reducer);
 
 	if (counter) {
-		singletonStore.getStore().dispatch(counterSlice.actions.add(counter));
+		singletonStore.getStore()?.dispatch(counterSlice.actions.add(counter));
 	}
 
-	res.send(singletonStore.getStore().getState());
+	res.send(singletonStore.getStore()?.getState());
 });
 
-app.get("/deleteCounter", function (req, res) {
-	singletonStore.getStore().reducerManager.removeReducer(counterSlice.name);
-	res.send(singletonStore.getStore().getState());
+app.get("/deleteCounter", (req: Request, res: Response) => {
+	singletonStore.getStore()?.reducerManager.removeReducer(counterSlice.name);
+	res.send(singletonStore.getStore()?.getState());
 });
 
-app.get("/updateCounter", function (req, res) {
-	const params = qs.parse(req.query);
-	const counter = parseInt(params.counter, 10) || 0;
+app.get("/updateCounter", (req: Request, res: Response) => {
+	const params = qs.parse(req.query as any) as { counter: string };
+	const counter = Number.parseInt(params.counter, 10) || 0;
 
 	singletonStore
 		.getStore()
-		.reducerManager.addReducer(counterSlice.name, counterSlice.reducer);
+		?.reducerManager.addReducer(counterSlice.name, counterSlice.reducer);
 
-	singletonStore.getStore().dispatch(counterSlice.actions.update(counter));
-	res.send(singletonStore.getStore().getState());
+	singletonStore.getStore()?.dispatch(counterSlice.actions.update(counter));
+	res.send(singletonStore.getStore()?.getState());
 });
 
-app.get("/getCounterSelectors", function (req, res) {
+app.get("/getCounterSelectors", (req: Request, res: Response) => {
 	res.send(counterSlice.getSelectors());
 });
 
-app.get("/", function (req, res) {
-	res.send(singletonStore.getStore().getState());
+app.get("/", (req: Request, res: Response) => {
+	res.send(singletonStore.getStore()?.getState());
 });
 
-app.listen(PORT, (error) => {
+app.listen(PORT, (error?: Error) => {
 	if (error) {
 		console.error(error);
 		return;

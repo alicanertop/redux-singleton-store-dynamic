@@ -1,23 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface PostSliceState {
-  post: { id: number | string; text: string; completed: boolean }[]
+  post: { id: number | string; text: string; completed: boolean }[];
 }
 
 const initialState: PostSliceState = {
-  post: []
-}
+  post: [],
+};
 
 export const postSlice = createSlice({
-  name: 'posts',
+  name: "posts",
   initialState: initialState,
   reducers: {
-    added(state, action) {
+    added(state, action: PayloadAction<{ id: number | string; text: string }>) {
       state.post.push({
         id: action.payload.id,
         text: action.payload.text,
-        completed: false
-      })
-    }
-  }
-})
+        completed: false,
+      });
+    },
+  },
+});
