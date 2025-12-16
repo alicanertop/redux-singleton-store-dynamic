@@ -1,74 +1,80 @@
-import qs from "qs";
-import express, { type Request, type Response } from "express";
-import { SingletonStore } from "./SingletonStore/index.ts";
-import { counterSlice, postSlice, userSlice } from "./slices/index.ts";
+import express, { type Request, type Response } from 'express';
+import qs from 'qs';
+
+import { ReduxStoreManager } from './ReduxStoreManager/index.ts';
+import { counterSlice, postSlice, userSlice } from './slices/index.ts';
 
 const app = express();
 const PORT = 4000;
 
-const singletonStore = new SingletonStore().chainConfigure({
-	reducer: { users: userSlice.reducer, posts: postSlice.reducer },
-	slices: [userSlice, postSlice],
-	// enableReducerManagerReducer: true,
+const reduxStoreManager = new ReduxStoreManager();
+
+app.get('/state', (req: Request, res: Response) => {
+  res.send(reduxStoreManager.store?.getState());
 });
 
-app.get("/state", (req: Request, res: Response) => {
-	res.send(singletonStore.getStore()?.getState());
+app.get('/addCounter', (req: Request, res: Response) => {
+  const params = qs.parse(req.query as any) as { counter: string };
+  const counter = Number(params.counter || 0);
+
+  reduxStoreManager.addSlice(counterSlice, counterSlice);
+
+  if (counter) {
+    reduxStoreManager.store?.dispatch(counterSlice.actions.add(counter));
+  }
+
+  res.send(reduxStoreManager.store?.getState());
 });
 
-app.get("/addCounter", (req: Request, res: Response) => {
-	const params = qs.parse(req.query as any) as { counter: string };
-	const counter = Number.parseInt(params.counter, 10) || 0;
-
-	singletonStore
-		.getStore()
-		?.reducerManager.addReducer(counterSlice.name, counterSlice.reducer);
-
-	if (counter) {
-		singletonStore.getStore()?.dispatch(counterSlice.actions.add(counter));
-	}
-
-	res.send(singletonStore.getStore()?.getState());
+app.get('/deleteCounter', (req: Request, res: Response) => {
+  reduxStoreManager.removeSlice(counterSlice);
+  res.send(reduxStoreManager.store?.getState());
 });
 
-app.get("/deleteCounter", (req: Request, res: Response) => {
-	singletonStore.getStore()?.reducerManager.removeReducer(counterSlice.name);
-	res.send(singletonStore.getStore()?.getState());
+app.get('/hasReducer', (req: Request, res: Response) => {
+  reduxStoreManager.hasSlice(counterSlice);
+  res.send(reduxStoreManager.store?.getState());
 });
 
-app.get("/updateCounter", (req: Request, res: Response) => {
-	const params = qs.parse(req.query as any) as { counter: string };
-	const counter = Number.parseInt(params.counter, 10) || 0;
+app.get('/updateCounter', (req: Request, res: Response) => {
+  const params = qs.parse(req.query as any) as { counter: string };
+  const counter = Number(params.counter || 0);
 
-	singletonStore
-		.getStore()
-		?.reducerManager.addReducer(counterSlice.name, counterSlice.reducer);
+  reduxStoreManager.addSlice(counterSlice);
 
-	singletonStore.getStore()?.dispatch(counterSlice.actions.update(counter));
-	res.send(singletonStore.getStore()?.getState());
+  reduxStoreManager.store?.dispatch(counterSlice.actions.update(counter));
+  res.send(reduxStoreManager.store?.getState());
 });
 
-app.get("/getCounterSelectors", (req: Request, res: Response) => {
-	res.send(counterSlice.getSelectors());
+app.get('/getCounterSelectors', (req: Request, res: Response) => {
+  res.send(counterSlice.getSelectors());
 });
 
-app.get("/", (req: Request, res: Response) => {
-	res.send(singletonStore.getStore()?.getState());
+app.get('/', (req: Request, res: Response) => {
+  res.send(reduxStoreManager.store?.getState());
 });
 
 app.listen(PORT, (error?: Error) => {
-	if (error) {
-		console.error(error);
-		return;
-	}
-	console.info(
-		`Listening on port ${PORT}. Open up http://localhost:${PORT}/ in your browser.`,
-	);
-	// singletonStore.getStore().subscribe((...res) => {
-	//   console.log(res,singletonStore.getStore().getState())
-	// })
+  if (error) {
+    console.error(error);
+    return;
+  }
 
-	// singletonStore.toObservable().subscribe({ onNext: console.log })
-	// singletonStore.observeStore(undefined, (d) => d, console.log)
-	singletonStore.observeStore(undefined, console.log);
+  console.info(
+    `Listening on port ${PORT}. Open up http://localhost:${PORT}/ in your browser.`
+  );
+
+  // reduxStoreManager.store?.subscribe((...res) => {
+  //   console.log(
+  //     res,
+  //     reduxStoreManager?.store?.getState(),
+  //     reduxStoreManager.getReducers()
+  //   );
+  // });
+
+  // reduxStoreManager.toObservable().subscribe({ onNext: console.log });
+  // reduxStoreManager.observeStore((d) => d, console.log);
+  reduxStoreManager.addSlice(postSlice, userSlice);
 });
+
+console.log(reduxStoreManager.getReducers());

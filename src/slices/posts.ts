@@ -1,4 +1,4 @@
-import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface PostSliceState {
   post: { id: number | string; text: string; completed: boolean }[];
@@ -9,7 +9,7 @@ const initialState: PostSliceState = {
 };
 
 export const postSlice = createSlice({
-  name: "posts",
+  name: 'posts',
   initialState: initialState,
   reducers: {
     added(state, action: PayloadAction<{ id: number | string; text: string }>) {
