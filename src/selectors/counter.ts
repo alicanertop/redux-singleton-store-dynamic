@@ -1,8 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import type { DynamicReduxStoreManagerState } from '../ReduxStoreManager/ReduxStoreManager.ts';
+import type { DynamicReduxStoreManagerState } from '../ReduxStoreManager';
 
-export const selectCounter = ({ counter }: DynamicReduxStoreManagerState) => counter;
+export const selectCounter = ({ counter }: DynamicReduxStoreManagerState) =>
+  counter;
 
 export const selectCounterValue = createSelector(
   selectCounter,

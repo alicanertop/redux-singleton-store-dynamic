@@ -8,18 +8,16 @@ import {
   configureStore,
 } from '@reduxjs/toolkit';
 
-import { isDataValid, isFunction } from './helpers/index.ts';
+import { isDataValid, isFunction } from './helpers';
 
 export interface DynamicReduxStoreManagerStateBase {}
-export interface DynamicReduxStoreManagerState
-  extends Partial<DynamicReduxStoreManagerStateBase> {}
+export interface DynamicReduxStoreManagerState extends Partial<DynamicReduxStoreManagerStateBase> {}
 
 export class ReduxStoreManager {
   private $slices: Set<Slice> = new Set();
   private $reducers: Map<string, Reducer> = new Map();
   private $options: ConfigureStoreOptions = { reducer: {} };
-  private $store?: Store<DynamicReduxStoreManagerState> =
-    undefined;
+  private $store?: Store<DynamicReduxStoreManagerState> = undefined;
 
   private addSliceReducer(slice?: Slice) {
     if (!slice) return;
@@ -96,7 +94,7 @@ export class ReduxStoreManager {
   }
 
   getReducers() {
-    return this.$reducers.entries().reduce(
+    return Array.from(this.$reducers.entries()).reduce(
       (prev, [name, reducer]) => {
         prev[name] = reducer;
         return prev;

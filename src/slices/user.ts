@@ -22,7 +22,7 @@ export const userSlice = createSlice({
   },
 });
 
-declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
+declare module '../ReduxStoreManager' {
   export interface DynamicReduxStoreManagerStateBase {
     user: UserSliceState;
   }

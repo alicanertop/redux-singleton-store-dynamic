@@ -1,1 +1,1 @@
-export * from './checkkers.ts';
+export * from './checkkers';

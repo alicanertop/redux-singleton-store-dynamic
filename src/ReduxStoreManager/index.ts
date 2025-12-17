@@ -1,1 +1,1 @@
-export * from './ReduxStoreManager.ts';
+export * from './ReduxStoreManager';

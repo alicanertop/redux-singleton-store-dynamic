@@ -1,16 +1,16 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-interface PostSliceState {
+export interface PostSliceState {
   postList: { id: number | string; text: string; completed: boolean }[];
 }
 
-const initialState: PostSliceState = {
+const postSliceInitialState: PostSliceState = {
   postList: [],
 };
 
 export const postSlice = createSlice({
   name: 'post',
-  initialState: initialState,
+  initialState: postSliceInitialState,
   reducers: {
     added(state, action: PayloadAction<{ id: number | string; text: string }>) {
       state.postList.push({
@@ -22,7 +22,7 @@ export const postSlice = createSlice({
   },
 });
 
-declare module '../ReduxStoreManager/ReduxStoreManager.ts' {
+declare module '../ReduxStoreManager' {
   export interface DynamicReduxStoreManagerStateBase {
     post: PostSliceState;
   }
