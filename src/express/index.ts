@@ -73,4 +73,4 @@ app.listen(PORT, (error?: Error) => {
   reduxStoreManager.addSlice(postSlice, userSlice);
 });
 
-console.log(reduxStoreManager.getReducers());
+console.log(reduxStoreManager.reducers);
