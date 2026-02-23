@@ -1,12 +1,26 @@
 /* eslint-disable no-plusplus */
-import type { AnyAction, Dispatch, MiddlewareAPI } from '@reduxjs/toolkit';
+import {
+  type AnyAction,
+  createListenerMiddleware,
+  type Dispatch,
+  type MiddlewareAPI,
+  type TypedStartListening,
+  type TypedStopListening,
+} from '@reduxjs/toolkit';
 
 import type {
   DynamicMiddleware,
   GetDefaultMiddlewareOptions,
+  GlobalReduxStoreState,
 } from '../@types/ReduxStoreTypes';
 
 export class MiddlewareManager {
+  protected actionListener = createListenerMiddleware<
+    GlobalReduxStoreState,
+    Dispatch<AnyAction>,
+    unknown
+  >();
+
   #middlewareList = new Set<DynamicMiddleware>();
 
   protected defaultMiddlewareOptions: GetDefaultMiddlewareOptions = {
@@ -33,5 +47,23 @@ export class MiddlewareManager {
     for (let i = 0; i < middlewareList.length; i++) {
       this.#middlewareList.delete(middlewareList[i]);
     }
+  }
+
+  public get actionListenerMiddleware() {
+    return this.actionListener;
+  }
+
+  public get startMiddlewareListening() {
+    return this.actionListener.startListening as TypedStartListening<
+      GlobalReduxStoreState,
+      Dispatch<AnyAction>
+    >;
+  }
+
+  public get stopMiddlewareListening() {
+    return this.actionListener.stopListening as TypedStopListening<
+      GlobalReduxStoreState,
+      Dispatch<AnyAction>
+    >;
   }
 }

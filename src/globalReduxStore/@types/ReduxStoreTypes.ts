@@ -23,9 +23,13 @@ export interface GetDefaultMiddlewareOptions {
 
 export interface GlobalStoreParams extends ConfigureStoreOptions {}
 
-export interface DynamicReduxStoreManagerStateBase {}
-export interface DynamicReduxStoreManagerState
-  extends Partial<DynamicReduxStoreManagerStateBase> {}
+export interface GlobalReduxStoreState {}
+export interface GlobalReduxStoreAction {}
+export interface GlobalReduxStoreReducer {}
+export interface GlobalReduxStoreMiddlewareAPI
+  extends MiddlewareAPI<Dispatch, GlobalReduxStoreState> {}
 
-export interface DynamicReduxStoreMiddlewareAPI
-  extends MiddlewareAPI<Dispatch, DynamicReduxStoreManagerState> {}
+export interface GlobalReduxStoreMountedState
+  extends Record<keyof GlobalReduxStoreState, boolean> {
+  auto: boolean;
+}

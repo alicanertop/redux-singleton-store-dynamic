@@ -1,34 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { enableMapSet } from 'immer';
-
 import {
   type AnyAction,
+  type CaseReducerActions,
   type CombinedState,
-  type Reducer,
-  type Store,
   combineReducers,
   configureStore,
+  type Reducer,
+  type SliceCaseReducers,
+  type Store,
 } from '@reduxjs/toolkit';
 
-import type {
-  DynamicReduxStoreManagerState,
-  GlobalStoreParams,
-} from '../@types/ReduxStoreTypes';
+import { enableMapSet } from 'immer';
+
 import { isDataValid } from '../helpers/isDataValid';
 import { isFunction } from '../helpers/isFunction';
+
+import type {
+  GlobalReduxStoreState,
+  GlobalStoreParams,
+} from '../@types/ReduxStoreTypes';
 import { MiddlewareManager } from './MiddlewareManager';
 
 export class StoreManager extends MiddlewareManager {
-  #store?: Store<DynamicReduxStoreManagerState> = undefined;
+  #store?: Store<GlobalReduxStoreState> = undefined;
 
   protected reducerMap: Map<string, Reducer> = new Map();
+
+  protected actionsMap: Map<
+    string,
+    CaseReducerActions<SliceCaseReducers<unknown>, string>
+  > = new Map();
 
   #options: GlobalStoreParams = {
     reducer: {},
     devTools: process.env.NODE_ENV === 'development',
     middleware: (defaultMiddleware) =>
       defaultMiddleware(this.defaultMiddlewareOptions).concat(
-        this.dynamicMiddlewareManager.bind(this)
+        this.dynamicMiddlewareManager.bind(this),
+        this.actionListener.middleware.bind(this)
       ),
   };
 
@@ -47,8 +56,8 @@ export class StoreManager extends MiddlewareManager {
   }
 
   #observeStoreWithGivenStore<S>(
-    store?: Store<DynamicReduxStoreManagerState>,
-    select?: (state: DynamicReduxStoreManagerState) => S,
+    store?: Store<GlobalReduxStoreState>,
+    select?: (state: GlobalReduxStoreState) => S,
     onChange?: (state: S) => void
   ) {
     if (!store) {
@@ -92,7 +101,7 @@ export class StoreManager extends MiddlewareManager {
     this.#store = configureStore(this.#options);
   }
 
-  public get store(): Store<DynamicReduxStoreManagerState> {
+  public get store(): Store<GlobalReduxStoreState> {
     return this.#store!;
   }
 
@@ -105,7 +114,7 @@ export class StoreManager extends MiddlewareManager {
   }
 
   observeStore<S>(
-    select: (state: DynamicReduxStoreManagerState) => S,
+    select: (state: GlobalReduxStoreState) => S,
     onChange?: (state: S) => void
   ) {
     return this.#observeStoreWithGivenStore(this.store, select, onChange);

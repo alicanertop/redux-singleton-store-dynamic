@@ -1,17 +1,23 @@
 /* eslint-disable no-plusplus */
-import { type Slice } from '@reduxjs/toolkit';
+import { createSlice, type Slice } from '@reduxjs/toolkit';
 
+import type { GlobalReduxStoreAction } from '../@types/ReduxStoreTypes';
 import { GLOBAL_REDUX_STORE_EVENTS } from '../helpers/eventTrigger';
-import { EmptySlice } from '../slice/empty/empty';
 import { StoreManager } from './StoreManager';
+
+/** This added for prevent empty reducer map error */
+const EmptySlice = createSlice({
+  name: '@@Empty@@',
+  initialState: {},
+  reducers: {},
+});
 
 export class SliceManager extends StoreManager {
   #slices: Set<Slice> = new Set();
 
   constructor() {
     super();
-    this.#slices.add(EmptySlice);
-    this.reducerMap.set(EmptySlice.name, EmptySlice.reducer);
+    this.#addSliceReducer(EmptySlice);
   }
 
   #addSliceReducer(slice?: Slice) {
@@ -23,6 +29,7 @@ export class SliceManager extends StoreManager {
 
     this.#slices.add(slice);
     this.reducerMap.set(slice.name, slice.reducer);
+    this.actionsMap.set(slice.name, slice.actions);
 
     if (slice.name !== EmptySlice.name) {
       GLOBAL_REDUX_STORE_EVENTS.sliceAdded(slice);
@@ -39,6 +46,7 @@ export class SliceManager extends StoreManager {
 
     this.#slices.delete(slice);
     this.reducerMap.delete(slice.name);
+    this.actionsMap.delete(slice.name);
 
     if (slice.name !== EmptySlice.name) {
       GLOBAL_REDUX_STORE_EVENTS.sliceRemoved(slice);
@@ -51,6 +59,22 @@ export class SliceManager extends StoreManager {
 
   public get slices() {
     return this.#slices;
+  }
+
+  public get sliceNameList() {
+    return Array.from(this.reducerMap.keys());
+  }
+
+  getActionBySliceName<T extends keyof GlobalReduxStoreAction>(sliceName: T) {
+    const action = this.actionsMap.get(sliceName) as GlobalReduxStoreAction[T];
+
+    if (!action) {
+      throw new Error(
+        `SliceManager:getActionBySliceName, action cannot found from ${sliceName}, make sure slice are mounted`
+      );
+    }
+
+    return action;
   }
 
   addSlice(...sliceList: Slice[]) {
